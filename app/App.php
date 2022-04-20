@@ -3,7 +3,8 @@
 use Core\Config;
 use Core\Database\Database;
 
-class App{
+class App
+{
 
     public $title = "Anivault";
     private $db_instance;
@@ -11,7 +12,7 @@ class App{
 
     public static function getInstance()
     {
-        if(is_null(self::$_instance)){
+        if (is_null(self::$_instance)) {
             self::$_instance = new App();
         }
         return self::$_instance;
@@ -29,16 +30,15 @@ class App{
     public function getModel($name)
     {
         $class_name = '\\App\\Model\\' . ucfirst($name) . 'Model';
-        return new $class_name($this->getDb()); 
+        return new $class_name($this->getDb());
     }
 
     public function getDb()
     {
         $config = Config::getInstance(ROOT . '/config/config.php');
-        if(is_null($this->db_instance)){
+        if (is_null($this->db_instance)) {
             $this->db_instance = new Database($config->get('db_name'), $config->get('db_user'), $config->get('db_pass'), $config->get('db_host'));
         }
-        var_dump($db_instance);
-        return $this->$db_instance;
+        return $this->db_instance;
     }
 }

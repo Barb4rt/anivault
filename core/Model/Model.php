@@ -33,7 +33,7 @@ class Model
     {
         $sql_parts = [];
         $attributes = [];
-        foreach($fields as $key => $value){
+        foreach ($fields as $key => $value) {
             $sql_parts[] = "$key = ?";
             $attributes[] = $value;
         }
@@ -45,7 +45,7 @@ class Model
     public function delete($id)
     {
         return $this->query("DELETE FROM {$this->_table} WHERE id = ?", [$id], true);
-        
+
     }
 
     public function create($fields)
@@ -79,7 +79,7 @@ class Model
                 $attributes,
                 str_replace('Model', 'Entity', get_class($this)),
                 $one
-                );
+            );
         } else {
             return $this->_db->query(
                 $statement,
