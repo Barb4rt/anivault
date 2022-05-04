@@ -6,7 +6,7 @@ App::load();
 if (isset($_GET['page'])) {
     $page = $_GET['page'];
 } else {
-    $page = 'shelter.index';
+    $page = 'shelters.index';
 }
 
 $page = explode('.', $page);
@@ -18,5 +18,5 @@ if ($page[0] == 'admin') {
     $action = $page[1];
 }
 $controller = new $controller();
-var_dump($controller);
+// var_dump($controller);
 $controller->$action();

@@ -29,4 +29,8 @@ class Controller
         die('Page introuvable');
     }
 
+    protected function _asset($path){
+        return ROOT.$path;
+    }
+
 }

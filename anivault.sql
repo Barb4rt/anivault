@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : sam. 16 avr. 2022 à 11:20
+-- Généré le : mer. 04 mai 2022 à 05:20
 -- Version du serveur : 5.7.36
 -- Version de PHP : 8.0.13
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de données : `anivault`
 --
+CREATE DATABASE IF NOT EXISTS `anivault` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `anivault`;
 
 -- --------------------------------------------------------
 
@@ -43,11 +45,18 @@ CREATE TABLE IF NOT EXISTS `j_care_animal` (
 
 DROP TABLE IF EXISTS `j_groomer_animal`;
 CREATE TABLE IF NOT EXISTS `j_groomer_animal` (
-  `ga_groomer_id` int(11) NOT NULL,
-  `ga_animal_id` int(11) NOT NULL,
-  PRIMARY KEY (`ga_groomer_id`,`ga_animal_id`),
-  KEY `ga_animal_id` (`ga_animal_id`)
+  `ga_groomer_fk` int(11) NOT NULL,
+  `ga_animal_fk` int(11) NOT NULL,
+  PRIMARY KEY (`ga_groomer_fk`,`ga_animal_fk`),
+  KEY `ga_animal_fk` (`ga_animal_fk`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `j_groomer_animal`
+--
+
+INSERT INTO `j_groomer_animal` (`ga_groomer_fk`, `ga_animal_fk`) VALUES
+(1, 1);
 
 -- --------------------------------------------------------
 
@@ -77,35 +86,35 @@ DROP TABLE IF EXISTS `s_animal`;
 CREATE TABLE IF NOT EXISTS `s_animal` (
   `a_id` int(11) NOT NULL AUTO_INCREMENT,
   `a_fk_owner_id` int(11) DEFAULT NULL,
-  `a_fk_enclosure_id` int(11) NOT NULL,
+  `a_enclosure_fk` int(11) NOT NULL,
   `a_name` varchar(150) NOT NULL,
-  `a_fk_specie_id` int(11) NOT NULL,
-  `a_birth_date` datetime NOT NULL,
-  `a_death_date` datetime DEFAULT NULL,
+  `a_specie_fk` int(11) NOT NULL,
+  `a_birthdate` datetime NOT NULL,
+  `a_deathdate` datetime DEFAULT NULL,
   `a_adoption_date` datetime DEFAULT NULL,
-  `a_fk_gender_id` int(11) NOT NULL,
+  `a_gender_fk` int(11) NOT NULL,
   `a_identification_number` varchar(50) DEFAULT NULL,
   `a_picture` varchar(255) NOT NULL,
   `a_weight` int(11) NOT NULL,
-  `a_fk_favorite_groomer_id` int(11) NOT NULL,
+  `a_favorite_groomer_fk` int(11) NOT NULL,
   `a_description` text,
   `a_available` tinyint(1) NOT NULL,
   `a_price` int(11) DEFAULT NULL,
-  `a_fk_race_id` int(11) NOT NULL,
+  `a_race_fk` int(11) NOT NULL,
   PRIMARY KEY (`a_id`),
-  KEY `s_animal_to_enclosure` (`a_fk_enclosure_id`),
-  KEY `s_animal_to_groomer` (`a_fk_favorite_groomer_id`),
+  KEY `s_animal_to_enclosure` (`a_enclosure_fk`),
+  KEY `s_animal_to_groomer` (`a_favorite_groomer_fk`),
   KEY `s_animal_to_owner` (`a_fk_owner_id`),
-  KEY `s_animal_to_gender` (`a_fk_gender_id`),
-  KEY `s_animal_to_specie` (`a_fk_specie_id`),
-  KEY `s_animal_to_race` (`a_fk_race_id`)
+  KEY `s_animal_to_gender` (`a_gender_fk`),
+  KEY `s_animal_to_specie` (`a_specie_fk`),
+  KEY `s_animal_to_race` (`a_race_fk`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `s_animal`
 --
 
-INSERT INTO `s_animal` (`a_id`, `a_fk_owner_id`, `a_fk_enclosure_id`, `a_name`, `a_fk_specie_id`, `a_birth_date`, `a_death_date`, `a_adoption_date`, `a_fk_gender_id`, `a_identification_number`, `a_picture`, `a_weight`, `a_fk_favorite_groomer_id`, `a_description`, `a_available`, `a_price`, `a_fk_race_id`) VALUES
+INSERT INTO `s_animal` (`a_id`, `a_fk_owner_id`, `a_enclosure_fk`, `a_name`, `a_specie_fk`, `a_birthdate`, `a_deathdate`, `a_adoption_date`, `a_gender_fk`, `a_identification_number`, `a_picture`, `a_weight`, `a_favorite_groomer_fk`, `a_description`, `a_available`, `a_price`, `a_race_fk`) VALUES
 (1, NULL, 1, 'Paco', 3, '2020-04-02 11:17:26', NULL, NULL, 1, '54841', './public/image/picture/animal', 500, 2, 'Perroquet de type Gris du gabon trés sociable', 1, 500, 14);
 
 -- --------------------------------------------------------
@@ -140,11 +149,11 @@ DROP TABLE IF EXISTS `s_enclosure`;
 CREATE TABLE IF NOT EXISTS `s_enclosure` (
   `e_id` int(11) NOT NULL AUTO_INCREMENT,
   `e_reference` varchar(255) NOT NULL,
-  `e_fk_shelter` int(11) NOT NULL,
+  `e_fk_shelter_id` int(11) NOT NULL,
   `e_fk_type` int(11) NOT NULL,
   `e_area` int(11) NOT NULL,
   PRIMARY KEY (`e_id`),
-  KEY `e_fk_shelter` (`e_fk_shelter`),
+  KEY `e_fk_shelter` (`e_fk_shelter_id`),
   KEY `e_fk_type` (`e_fk_type`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
@@ -152,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `s_enclosure` (
 -- Déchargement des données de la table `s_enclosure`
 --
 
-INSERT INTO `s_enclosure` (`e_id`, `e_reference`, `e_fk_shelter`, `e_fk_type`, `e_area`) VALUES
+INSERT INTO `s_enclosure` (`e_id`, `e_reference`, `e_fk_shelter_id`, `e_fk_type`, `e_area`) VALUES
 (1, 'EVH-01LY', 1, 2, 14),
 (2, 'EGS-01SE', 2, 4, 10);
 
@@ -165,7 +174,7 @@ INSERT INTO `s_enclosure` (`e_id`, `e_reference`, `e_fk_shelter`, `e_fk_type`, `
 DROP TABLE IF EXISTS `s_gender_choice`;
 CREATE TABLE IF NOT EXISTS `s_gender_choice` (
   `gc_id` int(11) NOT NULL AUTO_INCREMENT,
-  `gr_name` varchar(2) NOT NULL,
+  `gc_name` varchar(2) NOT NULL,
   PRIMARY KEY (`gc_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
@@ -173,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `s_gender_choice` (
 -- Déchargement des données de la table `s_gender_choice`
 --
 
-INSERT INTO `s_gender_choice` (`gc_id`, `gr_name`) VALUES
+INSERT INTO `s_gender_choice` (`gc_id`, `gc_name`) VALUES
 (1, 'M'),
 (2, 'F'),
 (3, 'NC');
@@ -190,9 +199,9 @@ CREATE TABLE IF NOT EXISTS `s_groomer` (
   `g-admin` tinyint(1) NOT NULL DEFAULT '0',
   `g_password` varchar(255) NOT NULL,
   `g_fk_animal_id` int(11) DEFAULT NULL,
-  `g_fk_shelter_id` int(11) DEFAULT NULL,
+  `g_shelter_fk` int(11) DEFAULT NULL,
   `g_firstname` varchar(50) NOT NULL,
-  `g_lastame` varchar(50) NOT NULL,
+  `g_lastname` varchar(50) NOT NULL,
   `g_date_entry` datetime NOT NULL,
   `g_date_exit` datetime DEFAULT NULL,
   `g_fk_gender_id` int(11) NOT NULL,
@@ -204,7 +213,7 @@ CREATE TABLE IF NOT EXISTS `s_groomer` (
   `g_quota_per_day` int(11) NOT NULL,
   PRIMARY KEY (`g_id`),
   KEY `s_groomer_to_animal` (`g_fk_animal_id`),
-  KEY `s_groomer_to_shelter` (`g_fk_shelter_id`),
+  KEY `s_groomer_to_shelter` (`g_shelter_fk`),
   KEY `s_groomer_to_superior` (`g_fk_superior_id`),
   KEY `s_groomer_to_gender` (`g_fk_gender_id`),
   KEY `s_groomer_to_speciality` (`g_fk_speciality_id`)
@@ -214,9 +223,9 @@ CREATE TABLE IF NOT EXISTS `s_groomer` (
 -- Déchargement des données de la table `s_groomer`
 --
 
-INSERT INTO `s_groomer` (`g_id`, `g-admin`, `g_password`, `g_fk_animal_id`, `g_fk_shelter_id`, `g_firstname`, `g_lastame`, `g_date_entry`, `g_date_exit`, `g_fk_gender_id`, `g_phone`, `g_mail`, `g_picture`, `g_fk_speciality_id`, `g_fk_superior_id`, `g_quota_per_day`) VALUES
-(1, 0, 'test', NULL, NULL, 'Jean', 'Tanlelou', '2022-04-16 07:44:20', NULL, 1, 654584936, 'jean.tanlelou@anivault.fr', './public/images/profile/default.jpg', 2, 2, 20),
-(2, 1, 'admintest', NULL, NULL, 'Anne', 'Esthésie', '2022-04-04 09:00:00', NULL, 2, 698745136, 'anne.esthesie@anivault.fr', './public/images/profile/default.jpg', 4, NULL, 10);
+INSERT INTO `s_groomer` (`g_id`, `g-admin`, `g_password`, `g_fk_animal_id`, `g_shelter_fk`, `g_firstname`, `g_lastname`, `g_date_entry`, `g_date_exit`, `g_fk_gender_id`, `g_phone`, `g_mail`, `g_picture`, `g_fk_speciality_id`, `g_fk_superior_id`, `g_quota_per_day`) VALUES
+(1, 0, 'test', NULL, 1, 'Jean', 'Tanlelou', '2022-04-16 07:44:20', NULL, 1, 654584936, 'jean.tanlelou@anivault.fr', '../public/images/profile/default.png', 2, 2, 20),
+(2, 1, 'admintest', NULL, 1, 'Anne', 'Esthésie', '2022-04-04 09:00:00', NULL, 2, 698745136, 'anne.esthesie@anivault.fr', '../public/images/profile/default.png', 4, NULL, 10);
 
 -- --------------------------------------------------------
 
@@ -361,8 +370,8 @@ CREATE TABLE IF NOT EXISTS `s_specie_choice` (
 
 INSERT INTO `s_specie_choice` (`sc_id`, `sc_name`, `sc_gender`, `sc_family`, `sc_scientific_name`) VALUES
 (1, 'Chien', 'Canis', 'Canidae', 'Canis lupus familiaris'),
-(3, 'Oiseaux_Psitaciforme', 'Psittacus', 'Psittacidae', 'Psittacus'),
-(4, 'Oiseaux_Fringiforme', 'Serinus', 'Fringillidae', 'Serinus'),
+(3, 'Oiseaux Psitaciforme', 'Psittacus', 'Psittacidae', 'Psittacus'),
+(4, 'Oiseaux Fringiforme', 'Serinus', 'Fringillidae', 'Serinus'),
 (5, 'Chat', 'Felis', 'Felidae', 'Felis silvestris catus');
 
 -- --------------------------------------------------------
@@ -396,18 +405,18 @@ INSERT INTO `s_type_choice` (`tc_id`, `tc_name`) VALUES
 -- Contraintes pour la table `s_animal`
 --
 ALTER TABLE `s_animal`
-  ADD CONSTRAINT `s_animal_to_enclosure` FOREIGN KEY (`a_fk_enclosure_id`) REFERENCES `s_enclosure` (`e_id`),
-  ADD CONSTRAINT `s_animal_to_gender` FOREIGN KEY (`a_fk_gender_id`) REFERENCES `s_gender_choice` (`gc_id`),
-  ADD CONSTRAINT `s_animal_to_groomer` FOREIGN KEY (`a_fk_favorite_groomer_id`) REFERENCES `s_groomer` (`g_id`),
+  ADD CONSTRAINT `s_animal_to_enclosure` FOREIGN KEY (`a_enclosure_fk`) REFERENCES `s_enclosure` (`e_id`),
+  ADD CONSTRAINT `s_animal_to_gender` FOREIGN KEY (`a_gender_fk`) REFERENCES `s_gender_choice` (`gc_id`),
+  ADD CONSTRAINT `s_animal_to_groomer` FOREIGN KEY (`a_favorite_groomer_fk`) REFERENCES `s_groomer` (`g_id`),
   ADD CONSTRAINT `s_animal_to_owner` FOREIGN KEY (`a_fk_owner_id`) REFERENCES `s_owner` (`o_id`),
-  ADD CONSTRAINT `s_animal_to_race` FOREIGN KEY (`a_fk_race_id`) REFERENCES `s_race_choice` (`rc_id`),
-  ADD CONSTRAINT `s_animal_to_specie` FOREIGN KEY (`a_fk_specie_id`) REFERENCES `s_specie_choice` (`sc_id`);
+  ADD CONSTRAINT `s_animal_to_race` FOREIGN KEY (`a_race_fk`) REFERENCES `s_race_choice` (`rc_id`),
+  ADD CONSTRAINT `s_animal_to_specie` FOREIGN KEY (`a_specie_fk`) REFERENCES `s_specie_choice` (`sc_id`);
 
 --
 -- Contraintes pour la table `s_enclosure`
 --
 ALTER TABLE `s_enclosure`
-  ADD CONSTRAINT `s_enclosure_ibfk_1` FOREIGN KEY (`e_fk_shelter`) REFERENCES `s_shelter` (`s_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `s_enclosure_ibfk_1` FOREIGN KEY (`e_fk_shelter_id`) REFERENCES `s_shelter` (`s_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `s_enclosure_ibfk_2` FOREIGN KEY (`e_fk_type`) REFERENCES `s_type_choice` (`tc_id`) ON DELETE CASCADE;
 
 --
@@ -416,7 +425,7 @@ ALTER TABLE `s_enclosure`
 ALTER TABLE `s_groomer`
   ADD CONSTRAINT `s_groomer_to_animal` FOREIGN KEY (`g_fk_animal_id`) REFERENCES `s_animal` (`a_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `s_groomer_to_gender` FOREIGN KEY (`g_fk_gender_id`) REFERENCES `s_gender_choice` (`gc_id`),
-  ADD CONSTRAINT `s_groomer_to_shelter` FOREIGN KEY (`g_fk_shelter_id`) REFERENCES `s_shelter` (`s_id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `s_groomer_to_shelter` FOREIGN KEY (`g_shelter_fk`) REFERENCES `s_shelter` (`s_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `s_groomer_to_speciality` FOREIGN KEY (`g_fk_speciality_id`) REFERENCES `s_speciality_choice` (`sc_id`),
   ADD CONSTRAINT `s_groomer_to_superior` FOREIGN KEY (`g_fk_superior_id`) REFERENCES `s_groomer` (`g_id`) ON UPDATE CASCADE;
 

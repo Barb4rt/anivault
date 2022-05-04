@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Database;
 
 class QueryBuilder
@@ -7,6 +8,7 @@ class QueryBuilder
     private $fields = [];
     private $conditions = [];
     private $from = [];
+    private $join = [];
 
     public function select()
     {
@@ -19,6 +21,7 @@ class QueryBuilder
         foreach (func_get_args() as $arg) {
             $this->conditions[] = $arg;
         }
+
         return $this;
     }
 
@@ -33,8 +36,21 @@ class QueryBuilder
         return $this;
     }
 
+    public function join($currentTable, $currentField, $targetTable, $targetField)
+    {
+        $this->join[] = "INNER JOIN $targetTable ON $currentTable.$currentField = $targetTable.$targetField ";
+
+        return $this;
+    }
     public function __toString()
     {
-        return 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->from) . ' WHERE ' . implode(' AND ', $this->conditions);
+
+        if (empty($this->conditions) && empty($this->join)) {
+            return 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->from);
+        }
+        if (empty($this->conditions)) {
+            return 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->from) . " " . implode(' ', $this->join);
+        }
+        return 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->from) . " " . implode(' ', $this->join) . ' WHERE ' . implode(' AND ', $this->conditions);
     }
 }

@@ -2,17 +2,19 @@
 
 namespace App\Controller;
 
-class ShelterController extends AppController
+class EnclosuresController extends AppController
 {
+    protected $_idKey = 's_id';
+
     public function __construct()
     {
         parent::__construct();
-        $this->loadModel('Shelter');
+        $this->loadModel('Shelters');
     }
 
     public function index()
     {
-        $shelters = $this->Shelter->all();
+        $enclosures = $this->Shelters->getEnclosures();
         $this->_render('shelters.index', compact('shelters'));
     }
 }

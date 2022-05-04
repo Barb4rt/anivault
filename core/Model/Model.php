@@ -1,7 +1,9 @@
 <?php
+
 namespace Core\Model;
 
 use Core\Database\Database;
+use Core\Database\QueryBuilder;
 
 class Model
 {
@@ -19,14 +21,22 @@ class Model
         }
     }
 
-    public function all()
+    public function all($selectedFields = '*',)
     {
-        return $this->query('SELECT * FROM ' . $this->_table);
+        if (is_array($selectedFields)) {
+            $selectedFields = implode(",", $selectedFields);
+        }
+        return $this->query("SELECT {$selectedFields} FROM " . $this->_table);
     }
 
-    public function find($id)
+    public function find($idField, $idValue, $selectedFields = '*')
     {
-        return $this->query("SELECT * FROM {$this->_table} WHERE id = ?", [$id], true);
+        if (is_array($selectedFields)) {
+            $selectedFields = implode(",", $selectedFields);
+        }
+        return $this->query("SELECT {$selectedFields} 
+         FROM {$this->_table} 
+         WHERE {$idField} = ?", [$idValue], true);
     }
 
     public function update($id, $fields)
@@ -45,7 +55,6 @@ class Model
     public function delete($id)
     {
         return $this->query("DELETE FROM {$this->_table} WHERE id = ?", [$id], true);
-
     }
 
     public function create($fields)
@@ -71,21 +80,20 @@ class Model
         return $return;
     }
 
-    public function query($statement, $attributes = null, $one = false)
+
+
+    public function query($statement, $attributes = null)
     {
         if ($attributes) {
             return $this->_db->prepare(
                 $statement,
                 $attributes,
                 str_replace('Model', 'Entity', get_class($this)),
-                $one
-            );
-        } else {
-            return $this->_db->query(
-                $statement,
-                str_replace('Model', 'Entity', get_class($this)),
-                $one
             );
         }
+        return $this->_db->query(
+            $statement,
+            str_replace('Model', 'Entity', get_class($this)),
+        );
     }
 }
